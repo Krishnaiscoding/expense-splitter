@@ -264,6 +264,17 @@ Claude, then reviewed, run, and iterated on locally.
   updating balances — including the edge cases called out in the spec (single payer, deleting
   the only expense, a free-riding member)."
 - "The createdAt timestamp doesn't match the spec's ISO-8601 format — fix it." (see point 4)
+- "I want the response format to match this exact example: `"createdAt": "2026-06-22T10:00:00Z"`
+  — update it." (led to switching `LocalDateTime` → `Instant.truncatedTo(ChronoUnit.SECONDS)`,
+  diagnosing that `Instant` alone still included sub-second precision that the spec's example
+  didn't show)
+- "Push this to my GitHub repo using this token" — followed by explicitly scrubbing the token
+  from the local git remote config after each push (`git remote set-url origin
+  https://github.com/...` with no embedded credential), so a live token wasn't left sitting in
+  version-control config between sessions
+- "Restructure the AI-Assisted Development section into the 5 numbered points the assignment
+  spec asks for" — required re-organizing prose that already existed into the exact structure
+  the grader would be checking against, rather than just appending new content
 
 ### 3. Where AI helped most
 
