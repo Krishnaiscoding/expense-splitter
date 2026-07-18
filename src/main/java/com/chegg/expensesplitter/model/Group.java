@@ -2,6 +2,7 @@ package com.chegg.expensesplitter.model;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +31,13 @@ public class Group {
     public Group(String name, List<String> members) {
         this.name = name;
         this.members = members;
-        this.createdAt = Instant.now();
+        this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
-            this.createdAt = Instant.now();
+            this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         }
     }
 

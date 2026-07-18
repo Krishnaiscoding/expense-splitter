@@ -3,6 +3,7 @@ package com.chegg.expensesplitter.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,13 +45,13 @@ public class Expense {
         this.amount = amount;
         this.paidBy = paidBy;
         this.splitAmong = splitAmong;
-        this.createdAt = Instant.now();
+        this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
-            this.createdAt = Instant.now();
+            this.createdAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         }
     }
 
