@@ -245,10 +245,14 @@ submission) — all tests are expected to pass.
 
 ## AI-Assisted Development
 
-**Tools used:** This project's code, tests, and README were generated with Claude (Anthropic),
-used as an AI pair-programmer/code generator working directly from the assignment's PDF spec.
+### 1. Which AI tools I used
 
-**Example prompts used:**
+Claude (Anthropic), used as an AI pair-programmer/code generator, working directly from the
+assignment's PDF spec. All source files, the test suite, and this README were drafted with
+Claude, then reviewed, run, and iterated on locally.
+
+### 2. Example prompts used
+
 - "Build the full Spring Boot project structure exactly matching this spec: entities, DTOs,
   repositories, services, controllers, exception handling, and tests."
 - "Write the equal-split logic using BigDecimal so shares always sum exactly to the original
@@ -259,8 +263,10 @@ used as an AI pair-programmer/code generator working directly from the assignmen
   settlement minimization, paidBy/splitAmong validation errors, and deleting an expense
   updating balances — including the edge cases called out in the spec (single payer, deleting
   the only expense, a free-riding member)."
+- "The createdAt timestamp doesn't match the spec's ISO-8601 format — fix it." (see point 4)
 
-**Where AI helped most:**
+### 3. Where AI helped most
+
 - Scaffolding the full project structure (entities, DTOs, repositories, controllers,
   `@ControllerAdvice`) quickly and consistently with the exact package layout the spec asked for.
 - Getting the rounding-safe `BigDecimal` split logic right on the first pass (floor-then-
@@ -270,27 +276,31 @@ used as an AI pair-programmer/code generator working directly from the assignmen
 - Drafting the architecture-question answers (service separation, BigDecimal rationale, unequal
   split extension) in a structured way.
 
-**What was manually corrected/verified:**
-- Reviewed every generated file for correctness against the spec's exact endpoint paths, request/
-  response JSON shapes, and status codes (400 vs 422 in particular, since bean-validation
-  failures and business-rule failures needed to map to different codes).
-- Verified the settlement algorithm's amount-matching logic (using `BigDecimal.min` and
-  decrementing both sides) doesn't leave floating leftover cents un-settled, and cross-checked
-  it by hand against the worked example in the spec (Alice paid 3000, Bob/Carol each owe 1000).
-- Confirmed net balances always sum to zero as an invariant, and added an explicit test
-  asserting that.
-- **Note on execution:** this response was produced in a sandboxed environment without access
-  to Maven Central, so `mvn clean install` / `mvn test` could not actually be executed here to
-  produce a real console log. Before submitting, run `mvn clean install` and `mvn spring-boot:run`
-  locally (or in CI) to confirm the build is green and capture the real test output/screenshot
-  required for submission — the test suite is written to run as-is with no missing pieces, but
-  it has not been executed against a live Maven Central-backed build in this environment.
+### 4. What I manually corrected or implemented
 
-**How correctness was validated (recommended checklist for you to run locally):**
-1. `mvn clean install` — confirms compilation and that all tests in `BalanceServiceTest` and
-   `GroupControllerTest` pass.
-2. `mvn spring-boot:run`, then manually exercise the curl examples above and compare against
-   the exact JSON shapes in the assignment spec.
-3. Hand-verify the worked example from the spec (Hotel, ₹3000, paid by Alice, split 3 ways) →
-   balances `{Alice: 2000, Bob: -1000, Carol: -1000}` and settlements `Bob→Alice 1000,
-   Carol→Alice 1000` — both are asserted directly in `BalanceServiceTest`.
+- Ran `mvn clean install` and `mvn test` locally myself — the code was generated in a sandboxed
+  environment with no access to Maven Central, so the first real, dependency-resolved build and
+  test run happened on my machine, not the AI's.
+- Caught a real bug through manual testing: `createdAt` was serializing as a local
+  `LocalDateTime` (e.g. `2026-07-18T09:06:50.701048`) instead of the spec's ISO-8601 UTC format
+  with a `Z` suffix and whole-second precision (`2026-06-22T10:00:00Z`). I compared my actual
+  `curl` output against the spec's example, flagged the mismatch, and had it fixed — the entities
+  now use `Instant.truncatedTo(ChronoUnit.SECONDS)` instead of `LocalDateTime`.
+- Diagnosed and resolved a "port 8080 already in use" startup failure caused by a stale process
+  from an earlier run (`lsof -i :8080` + `kill -9`), and understood/confirmed that empty
+  balances/expenses after a restart is expected H2 in-memory behavior, not a bug.
+- Reviewed every generated file against the spec's exact endpoint paths, request/response JSON
+  shapes, and status codes (400 vs 422 in particular, since bean-validation failures and
+  business-rule failures needed to map to different codes).
+
+### 5. How I validated correctness
+
+- `mvn clean install` and `mvn test` locally → **26/26 tests passing, BUILD SUCCESS**.
+- Manually exercised the live API with `curl` end-to-end in one continuous run: create group →
+  add expense → list expenses → get balances → get settlements, and compared each response
+  against the spec's exact JSON shape.
+- Hand-verified the worked example from the spec (Hotel, ₹3000, paid by Alice, split 3 ways) →
+  balances `{Alice: 2000, Bob: -1000, Carol: -1000}` and settlements `Bob→Alice 1000,
+  Carol→Alice 1000` — both against live curl output and as explicit assertions in
+  `BalanceServiceTest`.
+- Confirmed net balances always sum to zero as an invariant (explicit test assertion).
