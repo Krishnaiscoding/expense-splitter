@@ -286,6 +286,15 @@ Claude, then reviewed, run, and iterated on locally.
   that matches every case explicitly called out in the assignment.
 - Drafting the architecture-question answers (service separation, BigDecimal rationale, unequal
   split extension) in a structured way.
+- Quickly root-causing the `createdAt` format mismatch once flagged — identifying that
+  `LocalDateTime` was the wrong type entirely (no timezone info), then that `Instant` alone
+  still carried sub-second precision the spec's example didn't show, and applying the fix
+  (`Instant.truncatedTo(ChronoUnit.SECONDS)`) across both entities and their DTOs consistently,
+  without breaking any of the 26 existing tests.
+- Centralizing error-to-status-code mapping in one `GlobalExceptionHandler` so every controller
+  stays free of try/catch boilerplate, and keeping the 400-vs-422 distinction consistent
+  everywhere (bean-validation failures vs. business-rule failures) instead of it drifting
+  per-endpoint as the project grew.
 
 ### 4. What I manually corrected or implemented
 
