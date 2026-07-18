@@ -3,7 +3,7 @@ package com.chegg.expensesplitter.dto;
 import com.chegg.expensesplitter.model.Expense;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public class ExpenseResponse {
@@ -13,13 +13,13 @@ public class ExpenseResponse {
     private BigDecimal amount;
     private String paidBy;
     private List<String> splitAmong;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public ExpenseResponse() {
     }
 
     public ExpenseResponse(Long id, String title, BigDecimal amount, String paidBy,
-                            List<String> splitAmong, LocalDateTime createdAt) {
+                            List<String> splitAmong, Instant createdAt) {
         this.id = id;
         this.title = title;
         this.amount = amount;
@@ -79,11 +79,11 @@ public class ExpenseResponse {
         this.splitAmong = splitAmong;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

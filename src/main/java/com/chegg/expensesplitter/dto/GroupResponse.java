@@ -2,7 +2,7 @@ package com.chegg.expensesplitter.dto;
 
 import com.chegg.expensesplitter.model.Group;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public class GroupResponse {
@@ -10,12 +10,12 @@ public class GroupResponse {
     private Long id;
     private String name;
     private List<String> members;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public GroupResponse() {
     }
 
-    public GroupResponse(Long id, String name, List<String> members, LocalDateTime createdAt) {
+    public GroupResponse(Long id, String name, List<String> members, Instant createdAt) {
         this.id = id;
         this.name = name;
         this.members = members;
@@ -50,11 +50,11 @@ public class GroupResponse {
         this.members = members;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }
