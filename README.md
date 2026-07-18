@@ -310,6 +310,12 @@ Claude, then reviewed, run, and iterated on locally.
   failures during `mvn spring-boot:run`, caused by a previous run of the app still holding the
   port after `Ctrl+C` didn't fully terminate it. Used `sudo lsof -i :8080` to identify the PID
   bound to the port, then `kill -9 <PID>` to free it before restarting.
+- End-to-end troubleshooting sequence for the run failures: (1) read the Maven error output and
+  correctly pinpointed the actual root cause as a port conflict rather than a code/build defect,
+  (2) confirmed which process was bound to port 8080 with `sudo lsof -i :8080`, (3) freed the
+  port by killing that process, and (4) re-ran `mvn spring-boot:run` so the app could bind and
+  map to port 8080 cleanly on the next attempt — repeating this whenever a stale instance was
+  still running from an earlier session.
 - Learned to distinguish this from an actual code/build error: the `[ERROR] Failed to execute
   goal ... spring-boot-maven-plugin:run` message in the Maven output is a generic wrapper, and
   the real cause (port conflict, in this case) is in the `APPLICATION FAILED TO START` block
