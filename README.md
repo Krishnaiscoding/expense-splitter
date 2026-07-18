@@ -286,9 +286,22 @@ Claude, then reviewed, run, and iterated on locally.
   with a `Z` suffix and whole-second precision (`2026-06-22T10:00:00Z`). I compared my actual
   `curl` output against the spec's example, flagged the mismatch, and had it fixed — the entities
   now use `Instant.truncatedTo(ChronoUnit.SECONDS)` instead of `LocalDateTime`.
-- Diagnosed and resolved a "port 8080 already in use" startup failure caused by a stale process
-  from an earlier run (`lsof -i :8080` + `kill -9`), and understood/confirmed that empty
-  balances/expenses after a restart is expected H2 in-memory behavior, not a bug.
+- Diagnosed and resolved multiple `Web server failed to start. Port 8080 was already in use`
+  failures during `mvn spring-boot:run`, caused by a previous run of the app still holding the
+  port after `Ctrl+C` didn't fully terminate it. Used `sudo lsof -i :8080` to identify the PID
+  bound to the port, then `kill -9 <PID>` to free it before restarting.
+- Learned to distinguish this from an actual code/build error: the `[ERROR] Failed to execute
+  goal ... spring-boot-maven-plugin:run` message in the Maven output is a generic wrapper, and
+  the real cause (port conflict, in this case) is in the `APPLICATION FAILED TO START` block
+  a few lines above it — checked that block each time before assuming the code was broken.
+- Traced a case where `http://localhost:8080/api/groups` returned `[]` in the browser even
+  after creating a group, and correctly identified it as a *stale, already-running instance*
+  from an earlier session still serving old/empty state on port 8080 — not a code issue — by
+  re-checking with `sudo lsof -i :8080`, killing that process, and restarting the app fresh.
+- Confirmed that empty balances/expenses immediately after restarting the app is expected H2
+  in-memory behavior (data doesn't survive a restart), not a bug — and re-ran the full
+  create-group → add-expense → check-balances/settlements flow in a single continuous session
+  to verify end-to-end correctness.
 - Reviewed every generated file against the spec's exact endpoint paths, request/response JSON
   shapes, and status codes (400 vs 422 in particular, since bean-validation failures and
   business-rule failures needed to map to different codes).
