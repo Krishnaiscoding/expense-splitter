@@ -255,26 +255,18 @@ Claude, then reviewed, run, and iterated on locally.
 
 - "Build the full Spring Boot project structure exactly matching this spec: entities, DTOs,
   repositories, services, controllers, exception handling, and tests."
+- "Here's the full PDF spec. Before writing any code, list every endpoint, request/response shape,    and status code as a table, and flag anything ambiguous in the spec before you start."
 - "Write the equal-split logic using BigDecimal so shares always sum exactly to the original
   amount, even when the division doesn't come out even (e.g. ₹100 / 3)."
 - "Implement the greedy largest-debtor-pays-largest-creditor settlement algorithm and document
   it in the README."
+- "Before showing me the final code, review it yourself against the spec's error-handling table and   confirm each status code is correct — especially 400 vs 422, which are easy to mix up."
 - "Write JUnit 5 tests covering: create group, add expense, multi-expense balance correctness,
   settlement minimization, paidBy/splitAmong validation errors, and deleting an expense
   updating balances — including the edge cases called out in the spec (single payer, deleting
   the only expense, a free-riding member)."
-- "The createdAt timestamp doesn't match the spec's ISO-8601 format — fix it." (see point 4)
-- "I want the response format to match this exact example: `"createdAt": "2026-06-22T10:00:00Z"`
-  — update it." (led to switching `LocalDateTime` → `Instant.truncatedTo(ChronoUnit.SECONDS)`,
-  diagnosing that `Instant` alone still included sub-second precision that the spec's example
-  didn't show)
-- "Push this to my GitHub repo using this token" — followed by explicitly scrubbing the token
-  from the local git remote config after each push (`git remote set-url origin
-  https://github.com/...` with no embedded credential), so a live token wasn't left sitting in
-  version-control config between sessions
-- "Restructure the AI-Assisted Development section into the 5 numbered points the assignment
-  spec asks for" — required re-organizing prose that already existed into the exact structure
-  the grader would be checking against, rather than just appending new content
+- "The createdAt timestamp doesn't match the spec's ISO-8601 format — fix it."
+- "Go through the spec's 'Important Notes' section line by line and write one test per edge case it    explicitly calls out, quoting which line justified each test."
 
 ### 3. Where AI helped most
 
