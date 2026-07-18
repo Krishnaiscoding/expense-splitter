@@ -342,4 +342,8 @@ Claude, then reviewed, run, and iterated on locally.
   balances `{Alice: 2000, Bob: -1000, Carol: -1000}` and settlements `Bob→Alice 1000,
   Carol→Alice 1000` — both against live curl output and as explicit assertions in
   `BalanceServiceTest`.
+- Independently worked out the balance and settlement math by hand for the numbers I actually
+  tested with, rather than only trusting the API response — confirming each member's
+  `paid − owed` total matched what the endpoint returned, and that the settlement amounts summed
+  correctly before treating the output as correct.
 - Confirmed net balances always sum to zero as an invariant (explicit test assertion).
