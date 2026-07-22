@@ -339,3 +339,55 @@ Claude, then reviewed, run, and iterated on locally.
   `paid − owed` total matched what the endpoint returned, and that the settlement amounts summed
   correctly before treating the output as correct.
 - Confirmed net balances always sum to zero as an invariant (explicit test assertion).
+
+
+---------------------------- UPDATES 22-07-2026 ----------------------------
+
+Files changed
+
+Modified:
+
+src/main/java/com/chegg/expensesplitter/controller/GroupController.java — added addMember and updateMembers endpoints
+src/main/java/com/chegg/expensesplitter/service/GroupService.java — added addMember() and updateMembers() business logic
+
+Added:
+
+src/main/java/com/chegg/expensesplitter/dto/AddMemberRequest.java
+src/main/java/com/chegg/expensesplitter/dto/UpdateMembersRequest.java
+
+Tests added:
+
+src/test/java/com/chegg/expensesplitter/service/BalanceServiceTest.java — service-level tests for add/update members, and the 3-member/split-between-2 case
+src/test/java/com/chegg/expensesplitter/controller/GroupControllerTest.java — HTTP-level tests for the two new endpoints
+
+
+## New API Endpoints (Add Member / Delete Member / Split Dinner Between 2, When There Are 3 Members)
+
+**To Create Group :**
+```bash
+curl -X POST http://localhost:8080/api/groups \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test Group","members":["Alice","Bob","Carol"]}'
+```
+
+**To Add Member :**
+```bash
+curl -X POST http://localhost:8080/api/groups/1/members \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Dave"}'
+```
+
+**To Remove Member :**
+```bash
+curl -X PUT http://localhost:8080/api/groups/1/members \
+  -H "Content-Type: application/json" \
+  -d '{"members":["Alice","Bob","Carol"]}'
+```
+
+**To Test the 3-Members, Dinner Split Between 2 Case :**
+```bash
+curl -X POST http://localhost:8080/api/groups/1/expenses \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Dinner","amount":50.00,"paidBy":"Alice","splitAmong":["Alice","Bob"]}'
+```
+
