@@ -1,9 +1,11 @@
 package com.chegg.expensesplitter.controller;
 
+import com.chegg.expensesplitter.dto.AddMemberRequest;
 import com.chegg.expensesplitter.dto.BalanceResponse;
 import com.chegg.expensesplitter.dto.CreateGroupRequest;
 import com.chegg.expensesplitter.dto.GroupResponse;
 import com.chegg.expensesplitter.dto.SettlementResponse;
+import com.chegg.expensesplitter.dto.UpdateMembersRequest;
 import com.chegg.expensesplitter.model.Group;
 import com.chegg.expensesplitter.service.BalanceService;
 import com.chegg.expensesplitter.service.GroupService;
@@ -43,6 +45,19 @@ public class GroupController {
     @GetMapping("/{groupId}")
     public GroupResponse getGroup(@PathVariable Long groupId) {
         Group group = groupService.getGroupOrThrow(groupId);
+        return GroupResponse.from(group);
+    }
+
+    @PostMapping("/{groupId}/members")
+    @ResponseStatus(HttpStatus.CREATED)
+    public GroupResponse addMember(@PathVariable Long groupId, @Valid @RequestBody AddMemberRequest request) {
+        Group group = groupService.addMember(groupId, request.getName());
+        return GroupResponse.from(group);
+    }
+
+    @PutMapping("/{groupId}/members")
+    public GroupResponse updateMembers(@PathVariable Long groupId, @Valid @RequestBody UpdateMembersRequest request) {
+        Group group = groupService.updateMembers(groupId, request.getMembers());
         return GroupResponse.from(group);
     }
 
